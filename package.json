@@ -1,6 +1,7 @@
 {
   "name": "amqp-model",
   "version": "0.1.0",
+  "description": "Model for connecting to Amqp and simply publish or subscribe messages.",
   "main": "./dist/index.js",
   "scripts": {
     "build": "./node_modules/babel-cli/bin/babel.js ./src --out-dir ./dist --copy-files",
@@ -10,6 +11,13 @@
     "type": "git",
     "url": "git+https://github.com/Scorpio1337/amqp-model.git"
   },
+  "keywords": [
+    "Amqp",
+    "RabbitMQ",
+    "Publish",
+    "Subscribe",
+    "Message distribution"
+  ],
   "author": "Antonín Bouchal <me@justme.cz>",
   "license": "MIT",
   "bugs": {
@@ -23,6 +31,5 @@
   },
   "dependencies": {
     "amqp": "^0.2.6"
-  },
-  "description": ""
+  }
 }
