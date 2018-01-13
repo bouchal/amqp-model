@@ -2,6 +2,19 @@ import amqp from "amqp";
 import AmqpModelError from "./AmqpModelError";
 
 export default class IAmqpModel {
+    /**
+     *
+     * @param connection
+     * @param exchangeOptions
+     * @param queueOptions
+     * @param subscribeOptions
+     * @param queueName
+     * @param exchangeName
+     * @param onReady
+     * @param onError
+     * @param routingKey
+     * @param publishOptions
+     */
     constructor({
         connection,
         exchangeOptions = {
