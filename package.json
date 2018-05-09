@@ -1,6 +1,6 @@
 {
   "name": "amqp-model",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Model for connecting to Amqp and simply publish or subscribe messages.",
   "main": "./dist/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Scorpio1337/amqp-model.git"
+    "url": "git+https://github.com/bouchal/amqp-model.git"
   },
   "keywords": [
     "Amqp",
@@ -21,9 +21,9 @@
   "author": "Antonín Bouchal <me@justme.cz>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Scorpio1337/amqp-model/issues"
+    "url": "https://github.com/bouchal/amqp-model/issues"
   },
-  "homepage": "https://github.com/Scorpio1337/amqp-model#readme",
+  "homepage": "https://github.com/bouchal/amqp-model#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
