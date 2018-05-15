@@ -10,6 +10,7 @@ export default class IAmqpModel {
      * @param subscribeOptions
      * @param queueName
      * @param exchangeName
+     * @param bind
      * @param onReady
      * @param onError
      * @param routingKey
@@ -31,6 +32,7 @@ export default class IAmqpModel {
         },
         queueName = null,
         exchangeName = null,
+        bind = false,
         onReady = null,
         onError = null,
         routingKey = '#',
@@ -46,10 +48,12 @@ export default class IAmqpModel {
         this._exchange = null;
         this._routingKey = routingKey;
         this._publishOptions = publishOptions;
+        this._consumerTag = null;
 
         this._connection.on('ready', async() => {
             await this._initQueue(queueName);
             await this._initExchange(exchangeName);
+            await this._initBind(bind);
 
             onReady();
         });
@@ -88,9 +92,22 @@ export default class IAmqpModel {
                 }
 
                 this._exchange = exchange;
+                resolve();
             });
         });
     };
+
+    _initBind(bind) {
+        return new Promise((resolve, reject) => {
+            if (!bind) {
+                return resolve();
+            }
+
+            this._queue.bind(this._exchange.name, this._routingKey, () => {
+                resolve();
+            });
+        })
+    }
 
 
     /**
@@ -150,7 +167,20 @@ export default class IAmqpModel {
         this._queue.bind(routingKey, () => {
             this._queue.subscribe(options, (message, headers, deliveryInfo, messageObject) => {
                 fn(message, next);
+            }).addCallback((ok) => {
+                this._consumerTag = ok.consumerTag;
             });
         });
     }
+
+    disconnect() {
+        return this._connection.disconnect();
+    }
+
+    unsubscribe(done) {
+        return this._queue.unsubscribe(this._consumerTag).addCallback(() => {
+            done();
+        });
+    }
+
 }

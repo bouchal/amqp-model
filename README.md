@@ -16,6 +16,7 @@ import AmqpModel from 'amqp-model';
 const model = new AmqpModel({
     queueName: 'queue',
     exchangeName: 'exchange',
+    bind: true,
     onReady: () => {
         model.publish({
             whatToDo: 'Profit!'
@@ -45,6 +46,8 @@ const model = new AmqpModel({
   - Name of your queue
 - `exchangeName`
   - Name of your exchange
+- `bind`
+  - Initialize bind between queue and exchange
 - `onReady`
   - It's called when connection is stable.
   - You should connect you subscribe or publish event after this is called
@@ -60,3 +63,5 @@ const model = new AmqpModel({
 #### .publish(message, options = {}, routingKey = [Routing key in config])
 
 #### .queueByOne(fn, routingKey = this._routingKey, subscribeOptions = {})
+
+#### .unsubscribe(callback)
