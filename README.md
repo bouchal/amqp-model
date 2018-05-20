@@ -1,5 +1,3 @@
-# AMQP MODEL
-
 Class based on `amqp` package for simple publishing and subscribing messages from amqp protocol (RabbitMQ etc.).
 
 ## Instalation
@@ -18,17 +16,20 @@ const model = new AmqpModel({
     exchangeName: 'exchange',
     bind: true,
     onReady: () => {
-        model.publish({
-            whatToDo: 'Profit!'
-        });
-        
-        model.queueByOne((message) => {
-            console.log(message);
-        });
+        console.log ('I am connected');
     },
     onError: (err) => {
         console.log(err);
     }
+});
+
+
+model.publish({
+    whatToDo: 'Profit!'
+});
+
+model.queueByOne((message) => {
+    console.log(message);
 });
 ```
 
@@ -60,8 +61,22 @@ const model = new AmqpModel({
   
 ### Methods
 
-#### .publish(message, options = {}, routingKey = [Routing key in config])
-
-#### .queueByOne(fn, routingKey = this._routingKey, subscribeOptions = {})
-
-#### .unsubscribe(callback)
+- __.publish(message, options = {}, routingKey = [Routing key in config])__
+    - Publish message to exchange (should be JSON)
+    - If it's called before connection to server is stable, it will be handle after that.
+    - Return Promise
+        - If exchange hase confirm option on, it's waiting after delivery is confirmed, otherwise it's instant.
+- __.queueByOne(fn, subscribeOptions = {})__
+    - Subscribe to queue and call function in first parameter with message and callback for step to next message.
+    - If it's called before connection to server is stable, it will be handle after that.
+    - Return Promise
+        - Call resolve with consumer tag in argument (it can be handled for unsubscribe only one subscription)
+        - Reject is never called.
+- __.unsubscribe(consumerTag)__
+    - Unsubscribe one subscription.
+    - Return Promise
+        - Resolve is called after success and reject is never called.
+- __.unsubscribeAll()__
+    - Unsubscribe all subscriptions.
+    - Return Promise
+        - Resolve is called after success and reject is never called.

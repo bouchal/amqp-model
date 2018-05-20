@@ -1,12 +1,13 @@
 {
   "name": "amqp-model",
-  "version": "1.1.0",
+  "version": "2.1.0",
   "description": "Model for connecting to Amqp and simply publish or subscribe messages.",
   "main": "./dist/index.js",
   "scripts": {
     "build": "./node_modules/babel-cli/bin/babel.js ./src --out-dir ./dist --copy-files",
     "prepublish": "npm run build",
-    "test": "docker-compose -f ./test/docker-compose.yml up -d && sleep 10 && NODE_ENV=test mocha --require babel-core/register 'test/index.js' && docker-compose -f ./test/docker-compose.yml kill"
+    "bare-test": "NODE_ENV=test mocha --require babel-core/register 'test/index.js'",
+    "test": "docker-compose -f ./test/docker-compose.yml up -d && sleep 10 && npm run bare-test && docker-compose -f ./test/docker-compose.yml kill"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "mocha": "^5.1.1"
   },
   "dependencies": {
-    "amqp": "^0.2.6"
+    "amqp": "^0.2.6",
+    "async": "^2.6.0"
   }
 }
