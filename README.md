@@ -12,6 +12,7 @@ npm i --save amqp-model
 import AmqpModel from 'amqp-model';
 
 const model = new AmqpModel({
+    connection: { url: 'amqp://guest:guest@127.0.0.1:5672' },
     queueName: 'queue',
     exchangeName: 'exchange',
     bind: true,
@@ -36,7 +37,7 @@ model.queueByOne((message) => {
 ### Config parameters
 
 - `connection`
-  - Connection parameters ([link](https://www.npmjs.com/package/amqp#connection-options-and-url))
+  - Connection parameters ([link](https://www.npmjs.com/package/amqp#connection-options-and-url)) or instance of connection
 - `exchangeOptions`
   - Exchange connect options ([link](https://www.npmjs.com/package/amqp#connectionexchangename-options-opencallback))
 - `queueOptions`
@@ -80,3 +81,28 @@ model.queueByOne((message) => {
     - Unsubscribe all subscriptions.
     - Return Promise
         - Resolve is called after success and reject is never called.
+        
+### Using one connection to multiple models
+
+Sometimes you need multiple amqp models connected to one server but you don't wanna initialize multiple connections.
+
+Solution is simple. You create connection separately and then pass it as connection parameter in model initialization.
+ 
+```javascript
+import amqp from 'amqp';
+import AmqpModel from 'amqp-model';
+
+const connection = amqp.createConnection({
+    url: 'amqp://guest:guest@127.0.0.1:5672'
+});
+
+const modelOne = new AmqpModel({
+    connection,
+    ...
+});
+
+const modelTwo = new AmqpModel({
+    connection,
+    ...
+})
+```

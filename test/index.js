@@ -1,4 +1,5 @@
 import async from 'async';
+import amqp from 'amqp';
 import AmqpModel from '../src';
 
 const RABBIT_CONNECTION = 'amqp://guest:guest@127.0.0.1:5672';
@@ -111,5 +112,34 @@ describe('AMQP model', () => {
 		});
 
         amqpModel2.publish({ message: TEST_MESSAGE });
+	});
+
+	it ('should use already created connection', (done) => {
+        const TEST_MESSAGE = 'testMessage';
+
+        const connection = amqp.createConnection({url: RABBIT_CONNECTION});
+
+        connection.on('ready', () => {
+            const amqpModel2 = new AmqpModel({
+                connection,
+                exchangeName: 'testExchange2',
+                queueName: 'testQueue2',
+                onError: (err) => { done(err) },
+                bind: true
+            });
+
+            amqpModel2.queueByOne((message, next) => {
+                if (message.message == TEST_MESSAGE) {
+                    done();
+                } else {
+                    done('Message is not same as it should.');
+                }
+
+                next();
+                amqpModel2.disconnect();
+            });
+
+            amqpModel2.publish({ message: TEST_MESSAGE });
+		});
 	});
 })

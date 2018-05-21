@@ -1,4 +1,5 @@
 import amqp from "amqp";
+import Connection from 'amqp/lib/connection';
 import async from 'async';
 import AmqpModelError from "./AmqpModelError";
 
@@ -43,6 +44,7 @@ export default class IAmqpModel {
     }) {
         this._queueName = queueName;
         this._exchangeName = exchangeName;
+        this._bind = bind;
         this._queueOptions = queueOptions;
         this._exchangeOptions = exchangeOptions;
         this._subscribeOptions = subscribeOptions;
@@ -56,21 +58,37 @@ export default class IAmqpModel {
         this._publishWaitingList = [];
         this._subscribeWaitingList = [];
 
-        this._connection = amqp.createConnection(connection);
-
         onReady = onReady || function () { };
 
-        this._connection.on('ready', async() => {
-            await this._initQueue(queueName);
-            await this._initExchange(exchangeName);
-            await this._initBind(bind);
-
-            this._afterConnection();
-
+        this._initConnection(connection).then(() => {
+            this._connection.on('error', onError);
             onReady();
+        }, (err) => {
+            throw err;
         });
+    }
 
-        this._connection.on('error', onError);
+    async _initConnection(connection) {
+        if (connection instanceof Connection) {
+            this._connection = connection;
+            return await this._afterConnect();
+        }
+
+        return new Promise((resolve, reject) => {
+            this._connection = amqp.createConnection(connection);
+
+            this._connection.on('ready', async() => {
+                await this._afterConnect();
+                resolve();
+            });
+        })
+    }
+
+    async _afterConnect() {
+        await this._initQueue(this._queueName);
+        await this._initExchange(this._exchangeName);
+        await this._initBind(this._bind);
+        await this._handleWaitingLists();
     }
 
     _initQueue(queueName) {
@@ -119,7 +137,7 @@ export default class IAmqpModel {
         })
     }
 
-    _afterConnection() {
+    _handleWaitingLists() {
         const runWaitingItem = (item, next) => {
             const f = item[0];
             const res = item[1];
@@ -140,10 +158,18 @@ export default class IAmqpModel {
             }
         };
 
-        async.waterfall([
-            handleList(this._subscribeWaitingList),
-            handleList(this._publishWaitingList)
-        ]);
+        return new Promise((resolve, reject) => {
+            async.waterfall([
+                handleList(this._subscribeWaitingList),
+                handleList(this._publishWaitingList)
+            ], (err) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve();
+            });
+        })
     }
 
 
