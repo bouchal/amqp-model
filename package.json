@@ -1,6 +1,6 @@
 {
   "name": "amqp-model",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Model for connecting to Amqp and simply publish or subscribe messages.",
   "main": "./dist/index.js",
   "scripts": {

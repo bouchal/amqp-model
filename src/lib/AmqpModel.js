@@ -35,8 +35,8 @@ export default class IAmqpModel {
         queueName = null,
         exchangeName = null,
         bind = false,
-        onReady = null,
-        onError = null,
+        onReady = function () { },
+        onError = function () { },
         routingKey = '#',
         publishOptions = {
             contentType: 'application/json'
@@ -57,8 +57,6 @@ export default class IAmqpModel {
         this._consumerTags = [];
         this._publishWaitingList = [];
         this._subscribeWaitingList = [];
-
-        onReady = onReady || function () { };
 
         this._initConnection(connection).then(() => {
             this._connection.on('error', onError);
