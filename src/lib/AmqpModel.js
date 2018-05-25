@@ -3,6 +3,17 @@ import Connection from 'amqp/lib/connection';
 import async from 'async';
 import AmqpModelError from "./AmqpModelError";
 
+const defaultQueueOptions = {
+    durable: true,
+    autoDelete: false
+};
+
+const defaultExchangeOptions = {
+    autoDelete: false,
+    durable: true,
+    confirm: true
+};
+
 export default class IAmqpModel {
     /**
      *
@@ -20,15 +31,8 @@ export default class IAmqpModel {
      */
     constructor({
         connection,
-        exchangeOptions = {
-            autoDelete: false,
-            durable: true,
-            confirm: true
-        },
-        queueOptions = {
-            durable: true,
-            autoDelete: false
-        },
+        exchangeOptions = {},
+        queueOptions = {},
         subscribeOptions = {
             ack: true
         },
@@ -45,8 +49,17 @@ export default class IAmqpModel {
         this._queueName = queueName;
         this._exchangeName = exchangeName;
         this._bind = bind;
-        this._queueOptions = queueOptions;
-        this._exchangeOptions = exchangeOptions;
+
+        this._queueOptions = {
+            ...defaultQueueOptions,
+            ...queueOptions
+        };
+
+        this._exchangeOptions = {
+            ...defaultExchangeOptions,
+            ...exchangeOptions
+        };
+
         this._subscribeOptions = subscribeOptions;
         this._routingKey = routingKey;
         this._publishOptions = publishOptions;
