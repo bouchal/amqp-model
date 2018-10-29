@@ -24,7 +24,7 @@ describe('AMQP model', () => {
 		const TEST_MESSAGE = 'testMessage';
 
 		amqpModel.queueByOne((message, next) => {
-			if (message.message == TEST_MESSAGE) {
+			if (message.message === TEST_MESSAGE) {
 				done();
 			} else {
 				done('Message is not same as it should.');
@@ -101,7 +101,7 @@ describe('AMQP model', () => {
         });
 
         amqpModel2.queueByOne((message, next) => {
-            if (message.message == TEST_MESSAGE) {
+            if (message.message === TEST_MESSAGE) {
                 done();
             } else {
                 done('Message is not same as it should.');
@@ -129,7 +129,7 @@ describe('AMQP model', () => {
             });
 
             amqpModel2.queueByOne((message, next) => {
-                if (message.message == TEST_MESSAGE) {
+                if (message.message === TEST_MESSAGE) {
                     done();
                 } else {
                     done('Message is not same as it should.');

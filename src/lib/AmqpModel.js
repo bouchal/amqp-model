@@ -71,28 +71,27 @@ export default class IAmqpModel {
         this._publishWaitingList = [];
         this._subscribeWaitingList = [];
 
-        this._initConnection(connection).then(() => {
-            this._connection.on('error', onError);
-            onReady();
-        }, (err) => {
-            throw err;
-        });
+        this._initConnection(connection, onReady, onError);
     }
 
-    async _initConnection(connection) {
+    async _initConnection(connection, onReady, onError = null) {
         if (connection instanceof Connection) {
             this._connection = connection;
-            return await this._afterConnect();
-        }
-
-        return new Promise((resolve, reject) => {
+            await this._afterConnect();
+        } else {
             this._connection = amqp.createConnection(connection);
 
             this._connection.on('ready', async() => {
                 await this._afterConnect();
-                resolve();
+                if (typeof onReady === 'function') {
+                    await onReady();
+                }
             });
-        })
+        }
+
+        if (typeof onError === 'function') {
+            this._connection.on('error', onError);
+        }
     }
 
     async _afterConnect() {
